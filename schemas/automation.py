@@ -24,3 +24,10 @@ class AutomationResponse(BaseModel):
     name: str = Field(..., description="Automation name")
     description: str = Field(..., description="Automation description")
     is_active: bool = Field(..., description="Whether the automation is active")
+
+
+class ErrorResponse(BaseModel):
+    """Standard error response schema."""
+
+    detail: str = Field(..., description="Error message")
+
