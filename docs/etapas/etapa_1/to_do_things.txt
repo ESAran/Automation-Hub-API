@@ -1,3 +1,64 @@
+MELHORIAS - ETAPA 1
+
+1. Ajustar import no main.py
+- Trocar:
+  from api.automations import router
+- Para:
+  from api.routes.automations import router
+
+---
+
+2. Padronizar nome da tag no Swagger
+- Trocar:
+  tags=["automations"]
+- Para:
+  tags=["Automations"]
+
+---
+
+3. Tornar retorno do DELETE explícito (opcional)
+- No endpoint DELETE, adicionar:
+  return None
+
+---
+
+4. Evitar mutabilidade no retorno do service
+- Em funções que retornam automation:
+  trocar:
+    return automation
+  por:
+    return automation.copy()
+
+---
+
+5. Garantir consistência de nomenclatura
+- Usar sempre padrão:
+  get_automation_by_id
+- Evitar nomes abreviados ou inconsistentes
+
+---
+
+6. (Opcional - melhoria leve)
+Padronizar respostas de erro no futuro
+- Criar padrão único de erro (já começou com ErrorResponse)
+- Manter consistência em todos endpoints
+
+---
+
+7. (Opcional - organização futura)
+Criar arquivo separado para constants
+- Ex:
+  AUTOMATION_NOT_FOUND_RESPONSES
+- Pode ir para:
+  core/constants.py (na etapa 2 ou 3)
+
+---
+
+STATUS FINAL ESPERADO:
+- Código consistente
+- Estrutura limpa
+- Pronto para evoluir para banco de dados
+
 PENDENCIAS PARA ANTES DO BANCO DE DADOS
 
 1. Confirmar validacao de null no update
