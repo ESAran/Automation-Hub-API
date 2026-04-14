@@ -1,0 +1,71 @@
+PENDENCIAS PARA ANTES DO BANCO DE DADOS
+
+1. Confirmar validacao de null no update
+- Garantir que enviar null em name, description e is_active retorna 422
+- Validar se o projeto usa Pydantic v1 ou v2 para manter o validator correto
+- Evitar qualquer retorno 500 nesse cenario
+
+2. Melhorar validacao de campos no schema
+- Definir minimo de caracteres para name e description
+- Bloquear valores vazios ou apenas espacos
+- Revisar mensagens de erro para ficarem claras
+
+3. Revisar documentacao de respostas HTTP
+- Incluir 422 nos endpoints com validacao automatica do FastAPI
+- Conferir se Swagger reflete exatamente o comportamento atual
+- Revisar principalmente create e update
+
+4. Ajustar semantica do endpoint de atualizacao
+- Decidir se continua PUT com atualizacao parcial
+- Ou migrar para PATCH para refletir o comportamento atual
+- Alinhar documentacao com a decisao
+
+5. Evoluir tipagem no service
+- Reduzir uso generico de dict e list[dict]
+- Definir tipagem mais forte para objetos de automacao
+- Preparar o codigo para transicao mais simples ao repository
+
+6. Refinar separacao de responsabilidades
+- Manter router focado em HTTP
+- Manter regra de negocio no service
+- Planejar camada repository para entrada futura do banco
+
+7. Decidir estrategia de identificador
+- Manter int por enquanto ou planejar migracao para UUID
+- Registrar essa decisao para nao quebrar contrato da API depois
+
+
+PENDENCIAS PARA DEPOIS DO BANCO DE DADOS
+
+1. Tratar conflitos com HTTP 409
+- Definir quais conflitos realmente existem no dominio
+- Exemplo: nome de automacao duplicado
+- Implementar validacao no service
+- Alinhar com restricao real no banco, se houver unicidade
+- Retornar 409 Conflict quando fizer sentido
+
+2. Revisar contrato do endpoint de update
+- Decidir se a rota continua como PUT ou muda para PATCH
+- Hoje o comportamento e de atualizacao parcial
+- Se continuar PUT, avaliar se o correto seria exigir substituicao completa
+
+3. Validar melhor o schema de update
+- Decidir se campos podem receber null explicitamente
+- Evitar que name, description ou is_active virem None e quebrem o response_model
+- Se null nao for permitido, bloquear isso no schema
+
+4. Revisar respostas documentadas da API
+- Adicionar 422 onde o FastAPI ja valida automaticamente
+- Conferir se a documentacao dos endpoints bate com o comportamento real
+- Revisar especialmente create e update
+
+5. Regras de negocio para create
+- Definir validacoes que hoje ainda nao existem
+- Exemplo: nome obrigatorio sem espacos em branco
+- Exemplo: limites de tamanho
+- Exemplo: unicidade de nome, se fizer sentido
+
+6. Persistencia e consistencia
+- Substituir armazenamento em memoria por banco
+- Garantir que create, update e delete reflitam erros reais de persistencia
+- Revisar exceptions de dominio depois da integracao com o banco

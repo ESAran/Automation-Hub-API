@@ -40,8 +40,7 @@ def get_automations_handler() -> list[AutomationResponse]:
     Returns:
         A list of all stored automations.
     """
-    automations = list_automations()
-    return [AutomationResponse(**automation) for automation in automations]
+    return list_automations()
 
 # READ
 @router.get("/{automation_id}", response_model=AutomationResponse, responses=AUTOMATION_NOT_FOUND_RESPONSES)

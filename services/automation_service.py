@@ -34,7 +34,7 @@ def list_automations() -> list[dict]:
     Returns:
         A list containing all automation dictionaries currently in memory.
     """
-    return automations
+    return [automation.copy() for automation in automations]
 
 def get_automation_by_id(automation_id: int) -> dict:
     """Retrieve an automation by its identifier.
