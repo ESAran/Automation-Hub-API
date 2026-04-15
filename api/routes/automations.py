@@ -9,14 +9,12 @@ from services.automation_service import (
     delete_automation,
 )
 
-# Constants
 AUTOMATION_NOT_FOUND_RESPONSES = {
     400: {"model": ErrorResponse, "description": "Invalid automation ID"},
     404: {"model": ErrorResponse, "description": "Automation not found"},
 }
 
-
-router = APIRouter(prefix="/automations", tags=["automations"])
+router = APIRouter(prefix="/automations", tags=["Automations"])
 
 # CREATE
 @router.post("", response_model=AutomationResponse, status_code=201)
@@ -95,11 +93,15 @@ def delete_automation_handler(automation_id: int) -> None:
     Args:
         automation_id: The unique identifier of the automation to delete.
 
+    Returns:
+        None. The endpoint responds with HTTP 204 and no response body.
+
     Raises:
         HTTPException: If the identifier is invalid or the automation is not found.
     """
     try:
         delete_automation(automation_id)
+        return None
     except InvalidAutomationIdError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except AutomationNotFoundError as exc:

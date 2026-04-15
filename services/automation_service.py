@@ -1,7 +1,6 @@
 from services.exceptions import InvalidAutomationIdError, AutomationNotFoundError
 from schemas.automation import AutomationCreate, AutomationUpdate
 
-
 automations: list[dict] = []
 next_id = 1
 
@@ -26,7 +25,7 @@ def create_automation(data: AutomationCreate) -> dict:
     automations.append(automation)
     next_id += 1
     
-    return automation
+    return automation.copy()
 
 def list_automations() -> list[dict]:
     """Return the list of all stored automations.
@@ -54,7 +53,7 @@ def get_automation_by_id(automation_id: int) -> dict:
 
     for automation in automations:
         if automation["id"] == automation_id:
-            return automation
+            return automation.copy()
 
     raise AutomationNotFoundError(f"Automation with id {automation_id} not found")
 
@@ -82,7 +81,7 @@ def update_automation(automation_id: int, data: AutomationUpdate) -> dict:
     if "is_active" in update_data:
         automation["is_active"] = update_data["is_active"]
 
-    return automation
+    return automation.copy()
 
 def delete_automation(automation_id: int) -> None:
     """Delete an automation from in-memory storage.

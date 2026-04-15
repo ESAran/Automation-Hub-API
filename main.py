@@ -1,7 +1,7 @@
 import fastapi
 import uvicorn
 
-from api.automations import router as automation_router
+from api.routes.automations import router as automation_router
 
 app = fastapi.FastAPI()
 
