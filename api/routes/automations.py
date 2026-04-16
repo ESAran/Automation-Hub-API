@@ -63,13 +63,13 @@ def get_automation_by_id_handler(automation_id: int) -> AutomationResponse:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 # UPDATE
-@router.put("/{automation_id}", response_model=AutomationResponse, responses=AUTOMATION_NOT_FOUND_RESPONSES)
+@router.patch("/{automation_id}", response_model=AutomationResponse, responses=AUTOMATION_NOT_FOUND_RESPONSES)
 def update_automation_handler(automation_id: int, data: AutomationUpdate) -> AutomationResponse:
-    """Update an existing automation.
+    """Partially update an existing automation.
 
     Args:
         automation_id: The unique identifier of the automation to update.
-        data: The request payload containing the fields to update.
+        data: The request payload containing only the fields to update.
 
     Returns:
         The updated automation.

@@ -78,7 +78,7 @@ PENDENCIAS PARA ANTES DO BANCO DE DADOS
 - Conferir se Swagger reflete exatamente o comportamento atual
 - Revisar principalmente create e update
 
-4. Ajustar semantica do endpoint de atualizacao
+4. Ajustar semantica do endpoint de atualizacao (FEITO)
 - Decidir se continua PUT com atualizacao parcial
 - Ou migrar para PATCH para refletir o comportamento atual
 - Alinhar documentacao com a decisao

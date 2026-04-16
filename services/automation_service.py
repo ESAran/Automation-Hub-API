@@ -35,6 +35,28 @@ def list_automations() -> list[dict]:
     """
     return [automation.copy() for automation in automations]
 
+def _find_automation_by_id(automation_id: int) -> dict:
+    """Retrieve the stored automation by its identifier.
+
+    Args:
+        automation_id: The unique identifier of the automation.
+
+    Returns:
+        The stored automation dictionary that matches the given identifier.
+
+    Raises:
+        InvalidAutomationIdError: If the automation id is invalid.
+        AutomationNotFoundError: If no automation with the given identifier is found.
+    """
+    if automation_id <= 0:
+        raise InvalidAutomationIdError("Automation id must be a positive integer")
+
+    for automation in automations:
+        if automation["id"] == automation_id:
+            return automation
+
+    raise AutomationNotFoundError(f"Automation with id {automation_id} not found")
+
 def get_automation_by_id(automation_id: int) -> dict:
     """Retrieve an automation by its identifier.
 
@@ -48,14 +70,8 @@ def get_automation_by_id(automation_id: int) -> dict:
         InvalidAutomationIdError: If the automation id is invalid.
         AutomationNotFoundError: If no automation with the given identifier is found.
     """
-    if automation_id <= 0:
-        raise InvalidAutomationIdError("Automation id must be a positive integer")
-
-    for automation in automations:
-        if automation["id"] == automation_id:
-            return automation.copy()
-
-    raise AutomationNotFoundError(f"Automation with id {automation_id} not found")
+    automation = _find_automation_by_id(automation_id)
+    return automation.copy()
 
 def update_automation(automation_id: int, data: AutomationUpdate) -> dict:
     """Update the fields of an existing automation.
@@ -71,7 +87,7 @@ def update_automation(automation_id: int, data: AutomationUpdate) -> dict:
         InvalidAutomationIdError: If the automation id is invalid.
         AutomationNotFoundError: If the automation does not exist.
     """
-    automation = get_automation_by_id(automation_id)
+    automation = _find_automation_by_id(automation_id)
     update_data = data.dict(exclude_unset=True)
 
     if "name" in update_data:
@@ -93,5 +109,5 @@ def delete_automation(automation_id: int) -> None:
         InvalidAutomationIdError: If the automation id is invalid.
         AutomationNotFoundError: If the automation does not exist.
     """
-    automation = get_automation_by_id(automation_id)
+    automation = _find_automation_by_id(automation_id)
     automations.remove(automation)
