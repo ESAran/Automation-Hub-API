@@ -1,6 +1,3 @@
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
-
-class Automation(Base):
-    __tablename__ = "automations"
