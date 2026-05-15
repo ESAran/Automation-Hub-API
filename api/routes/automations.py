@@ -1,5 +1,13 @@
-from fastapi import APIRouter, HTTPException
-from schemas.automation import AutomationCreate, AutomationUpdate, AutomationResponse, ErrorResponse
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app.db.session import get_db
+from schemas.automation import (
+    AutomationCreate,
+    AutomationUpdate,
+    AutomationResponse,
+    ErrorResponse,
+)
 from services.exceptions import InvalidAutomationIdError, AutomationNotFoundError
 from services.automation_service import (
     create_automation,
@@ -16,91 +24,99 @@ AUTOMATION_NOT_FOUND_RESPONSES = {
 
 router = APIRouter(prefix="/automations", tags=["Automations"])
 
-# CREATE
-@router.post("", response_model=AutomationResponse, status_code=201)
-def create_automation_handler(data: AutomationCreate) -> AutomationResponse:
-    """Create a new automation.
 
-    Args:
-        data: The request payload containing the automation data.
+@router.post(
+    "",
+    response_model=AutomationResponse,
+    status_code=201,
+    summary="Create automation",
+    description="Create a new automation and persist it in the database.",
+    response_description="Created automation",
+)
+def create_automation_handler(
+    data: AutomationCreate,
+    db: Session = Depends(get_db),
+) -> AutomationResponse:
+    """Create automation."""
+    automation = create_automation(db, data)
+    return AutomationResponse.model_validate(automation)
 
-    Returns:
-        The newly created automation.
-    """
-    automation = create_automation(data)
-    return AutomationResponse(**automation)
 
-# READ
-@router.get("", response_model=list[AutomationResponse])
-def get_automations_handler() -> list[AutomationResponse]:
-    """Retrieve all automations.
+@router.get(
+    "",
+    response_model=list[AutomationResponse],
+    summary="List automations",
+    description="Return all automations stored in the database.",
+    response_description="List of automations",
+)
+def get_automations_handler(
+    db: Session = Depends(get_db),
+) -> list[AutomationResponse]:
+    """List automations."""
+    automations = list_automations(db)
+    return [AutomationResponse.model_validate(item) for item in automations]
 
-    Returns:
-        A list of all stored automations.
-    """
-    return list_automations()
 
-# READ
-@router.get("/{automation_id}", response_model=AutomationResponse, responses=AUTOMATION_NOT_FOUND_RESPONSES)
-def get_automation_by_id_handler(automation_id: int) -> AutomationResponse:
-    """Retrieve an automation by its identifier.
-
-    Args:
-        automation_id: The unique identifier of the automation.
-
-    Returns:
-        The automation that matches the provided identifier.
-
-    Raises:
-        HTTPException: If the identifier is invalid or the automation is not found.
-    """
+@router.get(
+    "/{automation_id}",
+    response_model=AutomationResponse,
+    responses=AUTOMATION_NOT_FOUND_RESPONSES,
+    summary="Get automation by id",
+    description="Retrieve a single automation by its identifier.",
+    response_description="Automation details",
+)
+def get_automation_by_id_handler(
+    automation_id: int,
+    db: Session = Depends(get_db),
+) -> AutomationResponse:
+    """Get automation by id."""
     try:
-        automation = get_automation_by_id(automation_id)
-        return AutomationResponse(**automation)
+        automation = get_automation_by_id(db, automation_id)
+        return AutomationResponse.model_validate(automation)
     except InvalidAutomationIdError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except AutomationNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
-# UPDATE
-@router.patch("/{automation_id}", response_model=AutomationResponse, responses=AUTOMATION_NOT_FOUND_RESPONSES)
-def update_automation_handler(automation_id: int, data: AutomationUpdate) -> AutomationResponse:
-    """Partially update an existing automation.
 
-    Args:
-        automation_id: The unique identifier of the automation to update.
-        data: The request payload containing only the fields to update.
-
-    Returns:
-        The updated automation.
-
-    Raises:
-        HTTPException: If the identifier is invalid or the automation is not found.
-    """
+@router.patch(
+    "/{automation_id}",
+    response_model=AutomationResponse,
+    responses=AUTOMATION_NOT_FOUND_RESPONSES,
+    summary="Update automation",
+    description="Partially update an existing automation by its identifier.",
+    response_description="Updated automation",
+)
+def update_automation_handler(
+    automation_id: int,
+    data: AutomationUpdate,
+    db: Session = Depends(get_db),
+) -> AutomationResponse:
+    """Update automation."""
     try:
-        automation = update_automation(automation_id, data)
-        return AutomationResponse(**automation)
+        automation = update_automation(db, automation_id, data)
+        return AutomationResponse.model_validate(automation)
     except InvalidAutomationIdError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except AutomationNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
-# DELETE
-@router.delete("/{automation_id}", status_code=204, responses=AUTOMATION_NOT_FOUND_RESPONSES)
-def delete_automation_handler(automation_id: int) -> None:
-    """Delete an automation by its identifier.
 
-    Args:
-        automation_id: The unique identifier of the automation to delete.
-
-    Returns:
-        None. The endpoint responds with HTTP 204 and no response body.
-
-    Raises:
-        HTTPException: If the identifier is invalid or the automation is not found.
-    """
+@router.delete(
+    "/{automation_id}",
+    status_code=204,
+    responses=AUTOMATION_NOT_FOUND_RESPONSES,
+    summary="Delete automation",
+    description="Delete an automation by its identifier.",
+    response_description="Automation deleted successfully",
+)
+def delete_automation_handler(
+    automation_id: int,
+    db: Session = Depends(get_db),
+) -> None:
+    """Delete automation."""
     try:
-        delete_automation(automation_id)
+        delete_automation(db, automation_id)
         return None
     except InvalidAutomationIdError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
