@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
 from core.constants import (
     MIN_DESCRIPTION_LENGTH,
     MAX_DESCRIPTION_LENGTH,
@@ -79,6 +79,8 @@ class AutomationUpdate(BaseModel):
 
 
 class AutomationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int = Field(..., description="Automation unique identifier")
     name: str = Field(..., description="Automation name")
     description: str = Field(..., description="Automation description")

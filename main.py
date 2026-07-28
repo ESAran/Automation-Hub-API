@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
+
 import fastapi
 import uvicorn
 
@@ -10,3 +13,4 @@ def health_check():
     return {"status":"ok"}
 
 app.include_router(automation_router)
+
