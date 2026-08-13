@@ -537,4 +537,4 @@ Você terá:
 
 # 📍 Próximo passo
 
-Etapa 4 — Execução de automações
+Etapa 4 — Execução de automações. 
